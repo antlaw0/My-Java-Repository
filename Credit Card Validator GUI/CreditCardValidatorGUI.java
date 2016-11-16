@@ -36,7 +36,7 @@ public class CreditCardValidatorGUI extends JPanel {
 			public void keyTyped(KeyEvent E){
 				String ccNumber = cardNumberTextField.getText();
                 boolean valid = isVisaCreditCardNumberValid(ccNumber);
-				if (ccNumber.isEmpty())
+				if (ccNumber.isEmpty() == false)
 				{
                 if (valid) {
                     validateMessageLabel.setText("Credit card number is valid");
