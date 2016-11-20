@@ -1,0 +1,3 @@
+2;defective monitor;Sam;Sun Nov 20 13:55:24 CST 2016
+unresolved
+null
