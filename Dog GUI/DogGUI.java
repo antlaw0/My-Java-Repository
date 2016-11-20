@@ -45,7 +45,7 @@ public class DogGUI extends JPanel{
         addDogToListButton = new JButton("Add");
 
         //Create a scroll pane, and add the list to it.
-        //This keeps the list within the size of the scroll pane.
+        //This keeps the list with	in the size of the scroll pane.
         //otherwise, the list gets larger with every element added, and the
         //GUI window gets larger too. With a scroll pane, if there are more elements
         //than fit in the scroll pane, then scroll bars appear.
