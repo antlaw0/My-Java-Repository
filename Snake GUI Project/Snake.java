@@ -111,8 +111,27 @@ public class Snake extends TimerTask implements KeyListener {
 
             int headX = snake.get(0)[0];    //Where's the head? New head square is relative to exising head.
             int headY = snake.get(0)[1];
-
-            int[] newHead = {headX + nextMove[0], headY + nextMove[1]};   //create new head
+			//if head out of left border
+			if (headX <0)
+			{
+				headX=xSquares;
+			}
+			//if head out of right border
+			if (headX > xSquares)
+			{
+				headX=0;
+			}
+			//if head out of top border
+			if (headY < 0)
+			{
+				headY=ySquares;
+			}
+			//if head out of bottom border
+			if (headY > ySquares)
+			{
+				headY=0;
+			}
+			int[] newHead = {headX + nextMove[0], headY + nextMove[1]};   //create new head
 
             if (contains(newHead, snake)) {   //Is new head in snake? Snake ran into it's own body, game over.
                 gameOver = clockTicksToRestart;                 // A positive value means the game is considered over. If this is positive, run() decreases it by 1 every time to provide a 'countdown' to the next game.
@@ -134,11 +153,12 @@ public class Snake extends TimerTask implements KeyListener {
             headX = newHead[0];    //Convenience variables for new head x and y
             headY = newHead[1];
 
-            if ((headX < 0 || headX > xSquares) || (headY < 0 || headY > ySquares)) {   //Head outside board? Snake hit wall, game over
-                gameOver = clockTicksToRestart;
-                return;
-            }
-
+            //if ((headX < 0 || headX > xSquares) || (headY < 0 || headY > ySquares)) {   //Head outside board? Snake hit wall, game over
+                //gameOver = clockTicksToRestart;
+                //return;
+            //}
+			
+			
             if (headX == kibble[0] && headY == kibble[1]) {      //Is kibble in same square as snake head? Snake ate kibble.
                 score++;                              // increase score
                 ateKibble = true;                     // set flag, so snake grows on next clock tick
