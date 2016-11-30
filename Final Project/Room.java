@@ -8,6 +8,7 @@ private int y;
 private String description;
 private boolean block;
 private int id;
+private LinkedList<WorldObject> roomList = new LinkedList<WorldObject>();
 public Room(String name, int x, int y, String description, boolean block)
 {
 	this.name=name;
@@ -16,6 +17,12 @@ public Room(String name, int x, int y, String description, boolean block)
 	this.x = x;
 	this.y=y;
 }//end of room constructor
+public void add(WorldObject obj) {
+	roomList.add(obj);
+}
+public LinkedList getList() {
+	return this.roomList;
+}//end of get  object list method
 public String getRoomName() {
 	return this.name;
 }//end of getName method

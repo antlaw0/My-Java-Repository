@@ -17,6 +17,8 @@ public static void main(String[] args)
 
 String command;
 Room startingRoom = new Room("Starting Room", 0,0,"This is a large blank room... for now",false);
+NPC Bob = new NPC("Bob","An old man in a travelling cloak stands here.");
+startingRoom.add(Bob);
 currentRoom=startingRoom;
 Room eastRoom = new Room("A dark forest",1,0,"This is a dark forest.",false);
 roomList.add(eastRoom);
@@ -26,8 +28,9 @@ System.out.println("Welcome to the game!");
 //game while loop
 while (true)
 {
-	System.out.println(currentRoom.getRoomName());
-	System.out.println(currentRoom.getRoomDescription());
+	System.out.println("===================="+currentRoom.getRoomName()+"==================== \n ");
+	System.out.println(currentRoom.getRoomDescription()+"\n");
+	showRoomObjects(currentRoom);
 	
 	command = stringScanner.next();
 	processCommand(command);
@@ -35,6 +38,16 @@ while (true)
 }//end of game while loop
 
 }//end of main method
+
+public static void showRoomObjects(Room r) {
+	WorldObject obj;
+	LinkedList<WorldObject> list = r.getList();
+	for (int i=0; i<list.size(); i++)
+	{
+		obj = list.get(i);
+		System.out.println(obj.getDescription());
+	}//end of for loop
+}//end of show all objects method
 
 public static boolean checkRoom(int checkX, int checkY)
 {
@@ -70,7 +83,12 @@ return result;
 
 public static void processCommand(String command)
 {
-	if (command.equals ("North"))
+	command = command.toLowerCase();
+	String[] parts = command.split("\\s+");
+	
+	
+	
+	if ((parts[0]).equals ("north") || parts[0].equals ("n"))
 	{
 		if (checkRoom(x,y-1)) {
 			y-=1;
@@ -81,7 +99,7 @@ public static void processCommand(String command)
 		System.out.println("Cannot go that way.");
 	}//end of go north else statement
 	}
-	else if (command.equals ("East"))
+	else if ((parts[0]).equals ("east") || parts[0].equals ("e"))
 	{
 		if (checkRoom(x+1,y))
 		{
@@ -93,7 +111,7 @@ public static void processCommand(String command)
 		System.out.println("Cannot go that way.");
 	}//end of go east else statement
 	}//end of go east statement
-	else if (command.equals ("West"))
+	else if ((parts[0]).equals ("west") || parts[0].equals ("w"))
 	{
 		if (checkRoom(x-1,y))
 		{
@@ -105,7 +123,7 @@ public static void processCommand(String command)
 		System.out.println("Cannot go that way.");
 	}//end of go west else statement
 	}//end of go west statement
-	else if (command.equals ("South"))
+	else if ((parts[0]).equals ("south") || parts[0].equals ("e"))
 	{
 		if (checkRoom(x,y+1))
 		{
@@ -117,6 +135,9 @@ public static void processCommand(String command)
 		System.out.println("Cannot go that way.");
 	}//end of go south else statement
 	}//end of go south 
-}
+	else { //command is not recognized
+	System.out.println("Command not recognized");
+	}//end of command not recognized else
+}//end of command processing method
 
 }//end of game class
