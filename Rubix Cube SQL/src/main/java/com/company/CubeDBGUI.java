@@ -1,8 +1,5 @@
-import java.text.*;
-import java.io.*;
-
+import java.sql.*;
 import javax.swing.event.*;
- 
 import java.util.*;
 import java.text.*;
 import javax.swing.*;
@@ -14,6 +11,12 @@ import java.awt.event.ActionListener;
 
 //Notice that this class extends JPanel
 public class CubeDBGUI extends JPanel{
+ static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";        //Configure the driver needed
+    static final String DB_CONNECTION_URL = "jdbc:mysql://localhost:3306/cube";     //Connection string – where's the database?
+    static final String USER = "Test";   //TODO replace with your username
+    static final String PASSWORD = "password";   //TODO replace with your password
+
+ 
  static LinkedList<Record> searchResultsList = new LinkedList<Record>();
 	static LinkedList<Record> recordList = new LinkedList<Record>();
 
@@ -155,10 +158,12 @@ String time = timeTextField.getText();
 				
 	
 				// Create Record and add to JList's model
-                Record newRecord = new Record(Record.getStaticRecordID(), name, Double.parseDouble(time));
+                Record newRecord = new Record(name, Double.parseDouble(time));
                 //add new Record to list model
 				RecordListModel.addElement(newRecord);
 				//add this Record to the recordList
+				recordList.add(newRecord);
+				//add this record to recordList LinkedList for later updating to DB
 				recordList.add(newRecord);
 				//clear both text fields
                 nameTextField.setText("");
@@ -166,11 +171,12 @@ String time = timeTextField.getText();
 
             }
         });
-
+/*
         deleteRecordButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Ask the JLIST what Record is selected
+                
+				// Ask the JLIST what Record is selected
                 // Notice since we've used generic types, setSelectedValue returns a Record.
                 // Without generic types, it would return an Object, and we'd have to cast it.
                 Record toDelete = RecordJList.getSelectedValue();
@@ -195,18 +201,54 @@ String time = timeTextField.getText();
             @Override
             public void actionPerformed(ActionEvent e) {
                 //before quit, update Cubes DB
-				updateDB(recordList);
+				updateDB(psInsert);
 				
 				System.exit(0);
             }
+			
         });
-
+*/
 
     }
 
 //Main method
     public static void main(String[] args) {
 
+//initialize sql components
+		Statement statement = null;
+        Connection conn = null;
+        ResultSet rs = null;
+        
+		PreparedStatement psInsert = null;
+        PreparedStatement psFindSolver = null;
+		PreparedStatement psUpdateSolverTime = null;
+		
+		
+		try {
+
+            
+			Class.forName(JDBC_DRIVER);
+
+        } catch (ClassNotFoundException cnfe) {
+            System.out.println("Can't instantiate driver class; check you have drives and classpath configured correctly?");
+            cnfe.printStackTrace();
+            System.exit(-1);  //No driver? Need to fix before anything else will work. So quit the program
+        }
+
+		try{
+	//create connection object conn
+			conn = DriverManager.getConnection(DB_CONNECTION_URL, USER, PASSWORD);
+            //create statement object from connection object
+			statement = conn.createStatement();
+			//create insert statement from connection object 
+			psInsert = conn.prepareStatement("INSERT INTO Cubes VALUES (?,?)");
+			//create prepared statement from connection object
+			psFindSolver = conn.prepareStatement("SELECT * FROM Cubes where UPPER(name) = UPPER(?)");
+			 psUpdateSolverTime=conn.prepareStatement("UPDATE Cubes SET Time=? WHERE Name=?");
+            //System.out.println("Rubix Cube Database \n ");//Title of program
+            	//if the table does not exist, create it. Table will never exist because of previous drop statement
+			String createTableSQL = "CREATE TABLE IF NOT EXISTS Cubes (Name varchar(90), Time double)";
+            statement.executeUpdate(createTableSQL);
 			
 			
         //Create a frame - the GUI window
@@ -223,28 +265,96 @@ String time = timeTextField.getText();
         //And add it to the JFrame
         RecordFrame.add(panel);
 //call getRecordsFromDB method to start where program last exited
-		getRecordsFromDB();
+		getRecordsFromDB(rs, statement);
+statement.executeUpdate("DROP TABLE Cubes"); //This is to delete the Cubes table everytime the program is run. Would not use in real program. Have to or else same inserts are added every time.
 
 		
         RecordFrame.pack();
 
-    }
-	public static void updateDB(LinkedList<Record> recordList) {
+		
+		
+		}catch(SQLException se) {
+			System.out.println("SQL Exception detected");
+			se.printStackTrace();
+			}//end of sqlException catch block
+		
+		
+		
+    }//end of main method
+	
+	public static void updateDB(PreparedStatement psInsert) {
+try {	
+	
+	Record r;
+	String n;
+	double t;
+	for (int i=0; i<recordList.size(); i++)
+	{
+		r=recordList.get(i);
+		n=r.getName();
+		t=r.getTime();
+		psInsert.setString(1,n);
+		psInsert.setDouble(2, t);
+		psInsert.executeUpdate();			
+			
+		
+	}
+	
+} catch (SQLException se) {
+	System.out.println("SQL Exception detected");
+}
 	
 	}//end of updateDB method
 	
 	//This method retrieves all records from Cubes table in cube database and puts them in the recordList
-	public static void getRecordsFromDB()
+	public static void getRecordsFromDB(ResultSet rs, Statement statement)
 	{
+try {	
+	
+	String fetchAllDataSQL = "SELECT * FROM Cubes";
+            rs = statement.executeQuery(fetchAllDataSQL);
+            while (rs.next()) {
+                String name = rs.getString("name");
+                double time = rs.getDouble("Time");
+				
+				Record newRecord = new Record(name, time);
+				//add this new record to recordList for later updating to DB
+				recordList.add(newRecord);
+				RecordListModel.addElement(newRecord);
+			}//end of while loop
+            
+            
+		
 	
 	
+} catch (SQLException se) {
+System.out.println("SQL Exception detected.");
+}	
 	
 	
-	
-	
-	}//end of read in from file method
+	}//end of read in from DB method
 
 	
 	
 	
-	}
+	}//end of CubeDBGUI class
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
