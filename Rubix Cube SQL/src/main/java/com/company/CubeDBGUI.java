@@ -1,3 +1,5 @@
+package com.company;
+
 import java.sql.*;
 import javax.swing.event.*;
 import java.util.*;
