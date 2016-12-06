@@ -1,5 +1,4 @@
 package com.company;
-
 import java.sql.*;
 import javax.swing.event.*;
 import java.util.*;
@@ -165,12 +164,11 @@ String time = timeTextField.getText();
 				RecordListModel.addElement(newRecord);
 				//add this Record to the recordList
 				recordList.add(newRecord);
-				//add this record to recordList LinkedList for later updating to DB
-				recordList.add(newRecord);
+				
 				//clear both text fields
                 nameTextField.setText("");
                 timeTextField.setText("");
-
+				
             }
         });
 /*
@@ -266,9 +264,13 @@ String time = timeTextField.getText();
 
         //And add it to the JFrame
         RecordFrame.add(panel);
-//call getRecordsFromDB method to start where program last exited
+
+		
+		
+		//call getRecordsFromDB method to start where program last exited
 		getRecordsFromDB(rs, statement);
-statement.executeUpdate("DROP TABLE Cubes"); //This is to delete the Cubes table everytime the program is run. Would not use in real program. Have to or else same inserts are added every time.
+//commented out for testing
+		//statement.executeUpdate("DROP TABLE Cubes"); //This is to delete the Cubes table everytime the program is run. Would not use in real program. Have to or else same inserts are added every time.
 
 		
         RecordFrame.pack();
@@ -295,7 +297,7 @@ try {
 		r=recordList.get(i);
 		n=r.getName();
 		t=r.getTime();
-		psInsert.setString(1,n);
+		psInsert.setString(1, n);
 		psInsert.setDouble(2, t);
 		psInsert.executeUpdate();			
 			
