@@ -2,6 +2,7 @@ import java.util.*;
 
 abstract class WorldObject
 {
+public boolean isInventoryItem;
 String name;
 String description;
 public void setDescription(String d) {

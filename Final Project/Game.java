@@ -13,7 +13,9 @@ public class Game
 		static Scanner stringScanner = new Scanner(System.in);
 		//Use this scanner to read in numerical data that will be stored in int or double variables
 		static Scanner numberScanner = new Scanner(System.in);
-public static int x=0;
+static Player player = new Player("Guy","Brave and noble adventurer");
+
+		public static int x=0;
 public static int y=0;
 
 		public static ArrayList<Room> roomList = new ArrayList<Room>();
@@ -23,12 +25,15 @@ static boolean displayedRoomInfo=false;
 public static void main(String[] args)
 {
 GUI gameGUI = new GUI();
-
-
+Consumable test = new Consumable("Test Potion", "A test potion", 4,3,2);
+Consumable apple = new Consumable("Apple","A shiny, red apple",1,1,1);
+player.inventory.add(test);
 String command;
 Room startingRoom = new Room("Starting Room", 0,0,"This is a large blank room... for now",false);
 NPC Bob = new NPC("Bob","An old man in a travelling cloak stands here.");
+Bob.inventory.add(apple);
 startingRoom.add(Bob);
+startingRoom.add(apple);
 currentRoom=startingRoom;
 roomList.add(startingRoom);
 Room eastRoom = new Room("A dark forest",1,0,"This is a dark forest.",false);
@@ -49,7 +54,7 @@ while (true)
 	showRoomObjects(currentRoom);
 	displayedRoomInfo=true;
 	}//end of displayedRoomInfo if statement
-	command = stringScanner.next();
+	command = stringScanner.nextLine();
 	processCommand(command);
 	
 }//end of game while loop
@@ -158,6 +163,22 @@ public static void processCommand(String command)
 		System.out.println("Cannot go that way.");
 	}//end of go south else statement
 	}//end of go south 
+	else if ((parts[0]).equals ("test"))
+	{
+		LinkedList<WorldObject> list = currentRoom.getList();
+		NPC o=(NPC) list.get(0);
+		o.showInventory();
+		
+	}
+	else if ((parts[0]).equals ("inventory") || (parts[0]).equals ("i"))
+	{
+System.out.println("You are carrying:  \n");
+player.showInventory();
+	}//end of show inventory command
+	else if ((parts[0]).equals ("take"))
+	{
+		takeItem((parts[1]));
+	}//end of if take
 	else if ((parts[0]).equals ("exit") || (parts[0]).equals ("quit"))
 	{
 		quitGame();
@@ -178,5 +199,43 @@ public static void quitGame() {
 		System.exit(0);
 	}
 }
+	
+	public static void takeItem(String searchName) {
+	WorldObject obj;
+	Room r=currentRoom;
+	String n;
+	LinkedList<WorldObject> list = r.getList();
+	boolean foundItem=false;
+	searchName = searchName.toLowerCase();
+	for (int i=0; i<list.size(); i++)
+	{
+		obj = list.get(i);
+		n=obj.getName();
+		n=n.toLowerCase();
+		if (n.equals (searchName))
+		{
+			if (obj.isInventoryItem == true)
+			{
+				player.inventory.add((Item) obj);
+				list.remove(i);
+				System.out.println(obj.getName()+" added to your inventory.");
+				foundItem=true;
+				
+				
+			}//end of inner if statement
+			else{ // obj has searchName but is not an inventory item
+				System.out.println("You cannot take that.");
+				
+			}//end of inner else statement
+		}	//end of outer if statement
+		
+		if (foundItem == false)
+		{
+			System.out.println("You see nothing like that here.");
+		}//end of if foundItem is true
+		
+	}//end of for loop
 
+	}//end of takeItem method
+	
 }//end of game class

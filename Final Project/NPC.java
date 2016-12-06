@@ -2,7 +2,7 @@ import java.util.*;
 
 public class NPC extends Character
 {
-
+public boolean isInventoryItem=false;	
 private String dialogue;
 public NPC(String name, String description) {
 	this.name=name;
