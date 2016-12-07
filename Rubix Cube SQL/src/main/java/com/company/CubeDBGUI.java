@@ -12,6 +12,10 @@ import java.awt.event.ActionListener;
 
 //Notice that this class extends JPanel
 public class CubeDBGUI extends JPanel{
+ static Statement statement = null;
+ static PreparedStatement psInsert = null;
+        
+        
  static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";        //Configure the driver needed
     static final String DB_CONNECTION_URL = "jdbc:mysql://localhost:3306/cube";     //Connection string – where's the database?
     static final String USER = "Test";   //TODO replace with your username
@@ -196,18 +200,26 @@ String time = timeTextField.getText();
             }
         });
 
-
+*/
         quitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //before quit, update Cubes DB
+                try{
+				//before quit, update Cubes DB
 				updateDB(psInsert);
+				statement.executeUpdate("DROP TABLE Cubes"); //This is to delete the Cubes table everytime the program is run. Would not use in real program. Have to or else same inserts are added every time.
+				JOptionPane.showMessageDialog(CubeDBGUI.this, "Update successful!");
+                    
+				//System.exit(0);
+				}catch (SQLException e){
+					System.out.println(e.printStackTrace());
+				}
 				
-				System.exit(0);
+				
             }
 			
         });
-*/
+
 
     }
 
@@ -215,12 +227,10 @@ String time = timeTextField.getText();
     public static void main(String[] args) {
 
 //initialize sql components
-		Statement statement = null;
-        Connection conn = null;
+		Connection conn = null;
         ResultSet rs = null;
         
-		PreparedStatement psInsert = null;
-        PreparedStatement psFindSolver = null;
+		PreparedStatement psFindSolver = null;
 		PreparedStatement psUpdateSolverTime = null;
 		
 		
@@ -269,9 +279,7 @@ String time = timeTextField.getText();
 		
 		//call getRecordsFromDB method to start where program last exited
 		getRecordsFromDB(rs, statement);
-//commented out for testing
-		//statement.executeUpdate("DROP TABLE Cubes"); //This is to delete the Cubes table everytime the program is run. Would not use in real program. Have to or else same inserts are added every time.
-
+		
 		
         RecordFrame.pack();
 

@@ -211,9 +211,13 @@ public static void quitGame() {
 	{
 		obj = list.get(i);
 		n=obj.getName();
+		String type;
+		if (obj.isInventoryItem){type="yes";}else{type="no";}
+		
 		n=n.toLowerCase();
 		if (n.equals (searchName))
 		{
+			System.out.println(n+"-"+searchName+"-"+type);
 			if (obj.isInventoryItem == true)
 			{
 				player.inventory.add((Item) obj);
