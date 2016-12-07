@@ -204,16 +204,12 @@ String time = timeTextField.getText();
         quitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try{
+                
 				//before quit, update Cubes DB
 				updateDB(psInsert);
-				statement.executeUpdate("DROP TABLE Cubes"); //This is to delete the Cubes table everytime the program is run. Would not use in real program. Have to or else same inserts are added every time.
-				JOptionPane.showMessageDialog(CubeDBGUI.this, "Update successful!");
-                    
-				//System.exit(0);
-				}catch (SQLException e){
-					System.out.println(		e.printStackTrace());
-				}
+				    
+				System.exit(0);
+				
 				
 				
             }
@@ -279,7 +275,7 @@ String time = timeTextField.getText();
 		
 		//call getRecordsFromDB method to start where program last exited
 		getRecordsFromDB(rs, statement);
-		
+				
 		
         RecordFrame.pack();
 
@@ -334,7 +330,8 @@ try {
 				recordList.add(newRecord);
 				RecordListModel.addElement(newRecord);
 			}//end of while loop
-            
+        //All records now read in from Cubes table, now drop cube table from DB so start fresh from where left off and not multiplying records.
+		statement.executeUpdate("DROP TABLE Cubes"); 
             
 		
 	

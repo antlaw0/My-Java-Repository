@@ -26,6 +26,7 @@ public static void main(String[] args)
 GUI gameGUI = new GUI();
 Consumable test = new Consumable("Test Potion", "A test potion", 4,3,2);
 Consumable apple = new Consumable("Apple","A shiny, red apple",1,1,1);
+Armor testHelmet = new Armor("Helmet","A test helmet",0,5);
 player.inventory.add(test);
 String command;
 Room startingRoom = new Room("Starting Room", 0,0,"This is a large blank room... for now",false);
@@ -174,6 +175,10 @@ public static void processCommand(String command)
 System.out.println("You are carrying:  \n");
 player.showInventory();
 	}//end of show inventory command
+	else if ((parts[0]).equals ("equip") || (parts[0]).equals ("wear"))
+	{
+		equipItem(parts[1]);
+	}//end of equip
 	else if ((parts[0]).equals ("take"))
 	{
 		takeItem((parts[1]));
@@ -261,4 +266,19 @@ public static void quitGame() {
 		return foundMatch;
 	}//end of isItem method
 	
+	
+	public static void equipItem(String name)
+	{
+			int index=0;
+			if (player.getIndexOf(name) != -1)
+			{
+				System.out.println(index);
+				
+			}//end of if statement
+		else{
+			System.out.println("You do not have that item.");
+		}//end of else statement
+		
+	}//end of equip item method
+		
 }//end of game class

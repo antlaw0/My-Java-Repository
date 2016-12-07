@@ -46,4 +46,22 @@ public void showInventory() {
 	
 }//end of showInventory method
 
+public int getIndexOf(String name) {
+	int index=-1;
+	name=name.toLowerCase();
+	String resultName;
+	Item I;
+	for (int i=0; i<this.inventory.size(); i++)
+	{
+		I=this.inventory.get(i);
+		resultName=I.getName();
+		resultName=resultName.toLowerCase();
+		if (name.equals (resultName)) {
+			index=i;
+		}//end of if statement
+	}//end of for loop
+	
+	return index;
+}//end of getIndexOf method
+
 }//end of Character class
