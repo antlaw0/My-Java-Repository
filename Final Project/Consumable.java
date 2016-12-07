@@ -9,5 +9,6 @@ public Consumable(String name, String description, int h, int m, int s) {
 	this.restoreHPAmount=h;
 	this.restoreMPAmount=m;
 	this.restoreSPAmount=s;
+	Game.itemMasterList.add(this.name);
 }//end of constructor
 }//end of consumable class

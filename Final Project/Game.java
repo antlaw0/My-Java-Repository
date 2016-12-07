@@ -14,10 +14,9 @@ public class Game
 		//Use this scanner to read in numerical data that will be stored in int or double variables
 		static Scanner numberScanner = new Scanner(System.in);
 static Player player = new Player("Guy","Brave and noble adventurer");
-
 		public static int x=0;
 public static int y=0;
-
+public static LinkedList<String> itemMasterList= new LinkedList();
 		public static ArrayList<Room> roomList = new ArrayList<Room>();
 public static Room currentRoom;
 static boolean displayedRoomInfo=false;
@@ -211,35 +210,55 @@ public static void quitGame() {
 	{
 		obj = list.get(i);
 		n=obj.getName();
-		String type;
-		if (obj.isInventoryItem){type="yes";}else{type="no";}
+		
 		
 		n=n.toLowerCase();
 		if (n.equals (searchName))
 		{
-			System.out.println(n+"-"+searchName+"-"+type);
-			if (obj.isInventoryItem == true)
+			if (isItem(n) == true)
 			{
 				player.inventory.add((Item) obj);
 				list.remove(i);
 				System.out.println(obj.getName()+" added to your inventory.");
 				foundItem=true;
+				break;
 				
 				
 			}//end of inner if statement
 			else{ // obj has searchName but is not an inventory item
 				System.out.println("You cannot take that.");
+				foundItem=true;
+				break;
 				
 			}//end of inner else statement
 		}	//end of outer if statement
+		
+		}//end of for loop
+
 		
 		if (foundItem == false)
 		{
 			System.out.println("You see nothing like that here.");
 		}//end of if foundItem is true
 		
-	}//end of for loop
-
+	
 	}//end of takeItem method
+	
+	public static boolean isItem(String name) {
+		boolean foundMatch=false;
+		String nameInList;
+		for (int i=0; i<itemMasterList.size(); i++)
+		{
+			
+			nameInList=itemMasterList.get(i);
+			nameInList=nameInList.toLowerCase();
+			if (name.equals (nameInList))
+			{
+				foundMatch=true;
+			}//end of if statement
+		}//end of for loop
+		
+		return foundMatch;
+	}//end of isItem method
 	
 }//end of game class
