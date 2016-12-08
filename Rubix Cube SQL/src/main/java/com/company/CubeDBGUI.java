@@ -1,3 +1,11 @@
+/*
+Rubix Cube SQL Program with GUI
+By Anthony Lawlor
+
+This program creates a GUI where the user enters names and times (unit unspecified) for solving of a Rubix cube puzzle. The entries are stored in a mysql database called 'Cubes' where user 'Test' with password 'password' has access. Records are added to the database when the add button is clicked. Highlight a record in the selection window and click 'delete' to remove the record from the GUI and the database. Quit exits the program and closes the GUI.
+*Now supports updating database records. 
+*/
+
 package com.company;
 import java.sql.*;
 import javax.swing.event.*;
@@ -12,16 +20,20 @@ import java.awt.event.ActionListener;
 
 //Notice that this class extends JPanel
 public class CubeDBGUI extends JPanel{
+ //create static prepared statements so can be used anywhere in program
  static Statement statement = null;
  static PreparedStatement psInsert = null;
-        
-        
+ static PreparedStatement psDelete=null;
+static PreparedStatement psUpdateSolverTime=null;        
+static JList<Record> RecordJList;
+    
+        //static string setup for making DB connection
  static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";        //Configure the driver needed
     static final String DB_CONNECTION_URL = "jdbc:mysql://localhost:3306/cube";     //Connection string – where's the database?
     static final String USER = "Test";   //TODO replace with your username
     static final String PASSWORD = "password";   //TODO replace with your password
 
- 
+ //list for storing records for searching
  static LinkedList<Record> searchResultsList = new LinkedList<Record>();
 	static LinkedList<Record> recordList = new LinkedList<Record>();
 
@@ -35,7 +47,6 @@ public class CubeDBGUI extends JPanel{
     private JTextField timeTextField;
     private JButton addRecordToListButton;
     private JScrollPane listScrollPane;
-    private JList<Record> RecordJList;
     private JButton deleteRecordButton;
     private JButton quitButton;
 	
@@ -45,11 +56,10 @@ public class CubeDBGUI extends JPanel{
 
     static DefaultListModel<Record> RecordListModel;
 
-    //Configure your GUI components in the constructor
+    //Configure GUI components in the constructor
     CubeDBGUI() {
 
-        //Set up GUI components here
-
+        //call two methods to setup GUI
         addComponents();
         configureListeners();
     }
@@ -57,7 +67,7 @@ public class CubeDBGUI extends JPanel{
     private void addComponents() {
 
         
-		
+		//create components
 		nameLabel = new JLabel("Enter name of the solver");
         timeLabel = new JLabel("Enter the time for this solver");
 
@@ -158,9 +168,55 @@ String time = timeTextField.getText();
                     return;
                 }
 				
+				Record checkRecord;
+				boolean foundMatch=false;
+				//search through records to find if record already exists
+				for (int i=0; i<recordList.size(); i++)
+				{
+					checkRecord=recordList.get(i);
+					//if a record matches the name of the entered name
+					if (name.equals (checkRecord.getName())) {
+						foundMatch=true;//need for processing logic below
+					}
+				}
 				
+//if there is a match, bring up a yes/no dialogue to ask if user wants to update the new record
+if (foundMatch) {
+int dialogResult = JOptionPane.showConfirmDialog (null, "A record with name "+name+" already exists. Would you like to update this time?","Warning", JOptionPane.YES_NO_OPTION);
+if(dialogResult == JOptionPane.YES_OPTION){				
+
+try{
+ Record element;
+ //find the record in the record list
+ for (int i = 0; i < RecordJList.getModel().getSize(); i++) {
+             //assign element to this loop's record
+			 element = RecordJList.getModel().getElementAt(i);
+			 //if this iteration's record has the same name as the entered text
+			 if (element.getName().equals (name)) {
+			RecordListModel.removeElement(element);//delete this element from the GUI's list
+			Record newRecord=new Record(name, Double.parseDouble(time));//create a new record from the entered text fields
+			RecordListModel.addElement(newRecord);//add this record to the list model
 				
+			 }//end of if statement
+							 
+             }					
+				//put the elements into the prepared sql statement
+	psUpdateSolverTime.setDouble(1, Double.parseDouble(time));
+	psUpdateSolverTime.setString(2, name);
+	//execute this statement
+	psUpdateSolverTime.executeUpdate();			
+		
+	
+} catch (SQLException se) {
+	se.printStackTrace();
+}
+	
+	
+
+}//end of if dialogue yes
 				
+}//end of if foundMatch
+else { //no record with that entered name in database, add this new record
 	
 				// Create Record and add to JList's model
                 Record newRecord = new Record(name, Double.parseDouble(time));
@@ -168,46 +224,66 @@ String time = timeTextField.getText();
 				RecordListModel.addElement(newRecord);
 				//add this Record to the recordList
 				recordList.add(newRecord);
-				
+String n=newRecord.getName();
+double t= newRecord.getTime();
+				//start try add record to database
+				try{
+				//put string into first element in statement
+				psInsert.setString(1, n);
+		//put double into second statement element
+		psInsert.setDouble(2, t);
+		//submit/run the update to the database
+		psInsert.executeUpdate();			
+				}catch (SQLException se){
+//print errors if sql excpetion detected
+				se.printStackTrace();
+				}//end of sql exception				
 				//clear both text fields
                 nameTextField.setText("");
                 timeTextField.setText("");
 				
             }
-        });
-/*
+        
+			}//end of else foundMatch was false
+		});
+
         deleteRecordButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                
-				// Ask the JLIST what Record is selected
-                // Notice since we've used generic types, setSelectedValue returns a Record.
-                // Without generic types, it would return an Object, and we'd have to cast it.
-                Record toDelete = RecordJList.getSelectedValue();
+                try{
+				//get the object selected in scroll list
+				Record toDelete = RecordJList.getSelectedValue();
                 
 				Record r;
+				//loop through all records in list until a match with the same name occurs
 				for (int i=0; i<recordList.size(); i++)
 				{
 					r=recordList.get(i);
-					if (r.getID() == toDelete.getID())
+					//if the selected record's name matches name in recordlist
+					if ((r.getName()).equals (toDelete.getName()))
 					{
+						//put this record's name into the prepared statement
+						psDelete.setString(1, r.getName());
+						//execute the statement
+						psDelete.executeUpdate();			
+								
 						recordList.remove(i);
 					}
 				}
 				
 				//remove this Record from the Record list model
 				RecordListModel.removeElement(toDelete);
+				
+				} catch (SQLException se) {se.printStackTrace();}
             }
         });
 
-*/
+
         quitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 
-				//before quit, update Cubes DB
-				updateDB(psInsert);
-				    
+				    //exit the program
 				System.exit(0);
 				
 				
@@ -226,10 +302,8 @@ String time = timeTextField.getText();
 		Connection conn = null;
         ResultSet rs = null;
         
-		PreparedStatement psFindSolver = null;
-		PreparedStatement psUpdateSolverTime = null;
 		
-		
+		//try to instantiate the driver
 		try {
 
             
@@ -248,11 +322,9 @@ String time = timeTextField.getText();
 			statement = conn.createStatement();
 			//create insert statement from connection object 
 			psInsert = conn.prepareStatement("INSERT INTO Cubes VALUES (?,?)");
-			//create prepared statement from connection object
-			psFindSolver = conn.prepareStatement("SELECT * FROM Cubes where UPPER(name) = UPPER(?)");
-			 psUpdateSolverTime=conn.prepareStatement("UPDATE Cubes SET Time=? WHERE Name=?");
-            //System.out.println("Rubix Cube Database \n ");//Title of program
-            	//if the table does not exist, create it. Table will never exist because of previous drop statement
+			psDelete=conn.prepareStatement("DELETE FROM Cubes WHERE Name = ?");
+			psUpdateSolverTime=conn.prepareStatement("UPDATE Cubes SET Time=? WHERE Name=?");
+			 	//if the table does not exist, create it. Table will never exist because of previous drop statement
 			String createTableSQL = "CREATE TABLE IF NOT EXISTS Cubes (Name varchar(90), Time double)";
             statement.executeUpdate(createTableSQL);
 			
@@ -290,48 +362,28 @@ String time = timeTextField.getText();
 		
     }//end of main method
 	
-	public static void updateDB(PreparedStatement psInsert) {
-try {	
-	
-	Record r;
-	String n;
-	double t;
-	for (int i=0; i<recordList.size(); i++)
-	{
-		r=recordList.get(i);
-		n=r.getName();
-		t=r.getTime();
-		psInsert.setString(1, n);
-		psInsert.setDouble(2, t);
-		psInsert.executeUpdate();			
-			
-		
-	}
-	
-} catch (SQLException se) {
-	System.out.println("SQL Exception detected");
-}
-	
-	}//end of updateDB method
 	
 	//This method retrieves all records from Cubes table in cube database and puts them in the recordList
 	public static void getRecordsFromDB(ResultSet rs, Statement statement)
 	{
 try {	
-	
+	//make string containing the query
 	String fetchAllDataSQL = "SELECT * FROM Cubes";
-            rs = statement.executeQuery(fetchAllDataSQL);
-            while (rs.next()) {
-                String name = rs.getString("name");
-                double time = rs.getDouble("Time");
-				
+            //create resultset with this query
+			rs = statement.executeQuery(fetchAllDataSQL);
+            //while there are results in the results set
+			while (rs.next()) {
+                //get string name from this result
+				String name = rs.getString("name");
+                //get double time from this result
+				double time = rs.getDouble("Time");
+				//create a record object from this data
 				Record newRecord = new Record(name, time);
-				//add this new record to recordList for later updating to DB
+				//add this new record to recordList for easier searching
 				recordList.add(newRecord);
+				//add this record to the scroll pane in the GUI
 				RecordListModel.addElement(newRecord);
 			}//end of while loop
-        //All records now read in from Cubes table, now drop cube table from DB so start fresh from where left off and not multiplying records.
-		statement.executeUpdate("DROP TABLE Cubes"); 
             
 		
 	

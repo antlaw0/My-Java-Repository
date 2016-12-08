@@ -26,13 +26,25 @@ public static void main(String[] args)
 GUI gameGUI = new GUI();
 Consumable test = new Consumable("Test Potion", "A test potion", 4,3,2);
 Consumable apple = new Consumable("Apple","A shiny, red apple",1,1,1);
-Armor testHelmet = new Armor("Helmet","A test helmet",0,5);
+Armor testHelmet = new Armor("Helmet","A test helmet",1,5);
+Armor testTorsoArmor = new Armor("Test Armor","A test torso armor",2,5);
+Armor startingTorsoArmor = new Armor("Leather Armor","A leather torso armor",2,5);
+Armor startingHelmet = new Armor("Leather Helmet","A test helmet",1,5);
+player.headSlot=startingHelmet;
+Armor startingLegArmor = new Armor("Leather Leggings","A pair of leather leggings",3,2);
+player.legSlot=startingLegArmor;
+Armor startingFeetArmor = new Armor("Leather Boots","A pair of leather boots",4,1);
+player.feetSlot=startingFeetArmor;
+
+
 player.inventory.add(test);
 String command;
 Room startingRoom = new Room("Starting Room", 0,0,"This is a large blank room... for now",false);
 NPC Bob = new NPC("Bob","An old man in a travelling cloak stands here.");
 Bob.inventory.add(apple);
 startingRoom.add(Bob);
+startingRoom.add(testTorsoArmor);
+startingRoom.add(testHelmet);
 startingRoom.add(apple);
 currentRoom=startingRoom;
 roomList.add(startingRoom);
@@ -175,6 +187,9 @@ public static void processCommand(String command)
 System.out.println("You are carrying:  \n");
 player.showInventory();
 	}//end of show inventory command
+	else if ((parts[0]).equals ("equipment")) {
+		player.showEquipment();
+	}//end of show equipment method
 	else if ((parts[0]).equals ("equip") || (parts[0]).equals ("wear"))
 	{
 		equipItem(parts[1]);
@@ -218,7 +233,7 @@ public static void quitGame() {
 		
 		
 		n=n.toLowerCase();
-		if (n.equals (searchName))
+		if (n.contains(searchName))
 		{
 			if (isItem(n) == true)
 			{
@@ -269,11 +284,23 @@ public static void quitGame() {
 	
 	public static void equipItem(String name)
 	{
-			int index=0;
+			int index=-1;
+			Armor A;
 			if (player.getIndexOf(name) != -1)
 			{
-				System.out.println(index);
-				
+				index=player.getIndexOf(name);
+				A=player.inventory.get(index);
+				if (A.itemType == 1) {
+					player.headSlot=A;
+					System.out.println(player.headSlot.getName()+" equipped.");
+					player.inventory.remove(index);
+				}//end of if itemType is 1
+				else if (A.itemType == 2) {
+					player.torsoSlot=A;
+					System.out.println(player.torsoSlot.getName()+" equipped.");
+					player.inventory.remove(index);
+					
+				}// end of if itemType is 2
 			}//end of if statement
 		else{
 			System.out.println("You do not have that item.");
