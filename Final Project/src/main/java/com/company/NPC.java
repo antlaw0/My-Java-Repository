@@ -4,11 +4,11 @@ import java.util.*;
 
 public class NPC extends Character
 {
-public boolean isInventoryItem=false;	
 private String dialogue;
-public NPC(String name, String description) {
+public NPC(String name, String description, String longDescription) {
 	this.name=name;
 	this.description=description;
+	this.longDescription=longDescription;
 }
 
 public void setDialogue(String text) {

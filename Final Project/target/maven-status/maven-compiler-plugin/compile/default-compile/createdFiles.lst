@@ -1,4 +1,5 @@
 com\company\Character.class
+com\company\Furniture.class
 com\company\Armor.class
 com\company\Player.class
 com\company\Room.class

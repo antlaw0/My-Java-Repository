@@ -92,20 +92,22 @@ statement=null;
 			se.printStackTrace();
 		}
 	
-Consumable test = new Consumable("Test Potion", "A test potion", 4,3,2);
-Consumable apple = new Consumable("Apple","A shiny, red apple",1,1,1);
-Armor testHelmet = new Armor("Helmet","A test helmet",1,5);
-Armor testTorsoArmor = new Armor("Test Armor","A test torso armor",2,5);
-Armor startingTorsoArmor = new Armor("Leather Armor","A leather torso armor",2,5);
-Armor startingHelmet = new Armor("Leather Helmet","A test helmet",1,5);
-Armor startingLegArmor = new Armor("Leather Leggings","A pair of leather leggings",3,2);
-Armor startingFeetArmor = new Armor("Leather Boots","A pair of leather boots",4,1);
+Consumable test = new Consumable("Test Potion", "A test potion", "This is a test potion. It serves no real purpose. It is just for testing. That is about it.", 4,3,2);
+Consumable apple = new Consumable("Apple","A shiny, red apple", "It is a shiny, red apple. It looks to be safe to eat, not poisoned, no worms. It should heal some health if you eat it. Or not, you will have to eat it and see...", 1,1,1);
+Armor testHelmet = new Armor("Helmet","A test helmet", "It appears to be a low-quality helmet made of rough leather. It doesn't look like it will provide much protection but beggers cannot be choosers. Just wear it.", 1,5);
+Armor testTorsoArmor = new Armor("Test Armor","A test torso armor", "It is a low-quality piece of armor that is worn on the body protecting the chest and vital organs from harm. It does not look like much but is better than nothing.", 2,5);
+Armor startingTorsoArmor = new Armor("Leather Armor","A leather torso armor", "This is a lower quality light armor made of thick leather. It should provide minimal protection without sacrificing mobility. Good for light infantry, archers, and rogues.", 2,5);
+Armor startingHelmet = new Armor("Leather Helmet","A test helmet", "This looks like a basic leather helmet used by light infantry. It is light-weight and provides minimal protection. It is better than nothing.", 1,5);
+Armor startingLegArmor = new Armor("Leather Leggings","A pair of leather leggings", "This is a pair of thick leather leggings worn by light infantry and archers. It provides minimal protection without sacrificing mobility. It is better than nothing.", 3,2);
+Armor startingFeetArmor = new Armor("Leather Boots","A pair of leather boots", "These are a pair of low-quality leather boots. They provide minimal protection and do not look too comfortable. They are better than nothing though.", 4,1);
 
 
 String command;
-Room startingRoom = new Room("Starting Room", 0,0,"This is a large blank room... for now",false);
-NPC Bob = new NPC("Bob","An old man in a travelling cloak stands here.");
+Room startingRoom = new Room("Small Camp", 0,0,"This is a small camp for travellers of all sorts. There a few tents scattered about with a fire crackling softly in the center. There are not many people currently staying here. ",true);
+NPC Bob = new NPC("Bob","An old man in a travelling cloak stands here.", "He looks very old and well travelled. He has numerous bags that presumably  contain his travelling gear. He seems friendly enough. He is a human male approximately 5 ft tall.");
 Bob.inventory.add(apple);
+Furniture bed = new Furniture("bed","A nice, comfy bed.", "It is a small cott with a quilt and a pillow. Perfect for sleeping.");
+startingRoom.add(bed);
 startingRoom.add(Bob);
 startingRoom.add(testTorsoArmor);
 startingRoom.add(testHelmet);
@@ -225,6 +227,7 @@ public static void processCommand(String command)
 	
 	if ((parts[0]).equals ("north") || parts[0].equals ("n"))
 	{
+		if (parts.length == 1) {
 		if (checkRoom(x,y-1)) {
 			y-=1;
 			currentRoom=getRoom();
@@ -234,9 +237,14 @@ public static void processCommand(String command)
 	{
 		System.out.println("Cannot go that way.");
 	}//end of go north else statement
+		}//end of check parts array length
+		else{
+			System.out.println("Enter direction:  north, south, east, west.");
+		}//end of else parts length
 	}
 	else if ((parts[0]).equals ("east") || parts[0].equals ("e"))
 	{
+		if (parts.length == 1) {
 		if (checkRoom(x+1,y))
 		{
 			x+=1;
@@ -249,9 +257,14 @@ public static void processCommand(String command)
 	{
 		System.out.println("Cannot go that way.");
 	}//end of go east else statement
+		} else {
+			System.out.println("Enter direction:  north, south, east, west.");
+		
+		}//end of else check length of parts
 	}//end of go east statement
 	else if ((parts[0]).equals ("west") || parts[0].equals ("w"))
 	{
+		if (parts.length == 1) {
 		if (checkRoom(x-1,y))
 		{
 			x-=1;
@@ -262,9 +275,14 @@ public static void processCommand(String command)
 	{
 		System.out.println("Cannot go that way.");
 	}//end of go west else statement
+		} else {
+			System.out.println("Enter direction:  north, south, east, west.");
+		
+		}//end of check parts length statement
 	}//end of go west statement
 	else if ((parts[0]).equals ("south") || parts[0].equals ("s"))
 	{
+		if (parts.length == 1) {
 		if (checkRoom(x,y+1))
 		{
 			y+=1;
@@ -275,6 +293,10 @@ public static void processCommand(String command)
 	{
 		System.out.println("Cannot go that way.");
 	}//end of go south else statement
+		} else {
+			System.out.println("Enter direction:  north, south, east, west.");
+		
+		}//end of check parts length
 	}//end of go south 
 	else if ((parts[0]).equals ("test"))
 	{
@@ -285,25 +307,74 @@ public static void processCommand(String command)
 	}
 	else if ((parts[0]).equals ("inventory") || (parts[0]).equals ("i"))
 	{
+if (parts.length == 1) {
 System.out.println("You are carrying:  \n");
 player.showInventory();
+}//end of check for length of array
+else{
+	System.out.println("Command takes 1 argument <inventory> or <i>.");
+}
 	}//end of show inventory command
 	else if ((parts[0]).equals ("equipment")) {
+		if (parts.length == 1) {
 		player.showEquipment();
+		}//end of show equipment
+		else {
+			System.out.println("Command takes 1 argument <equipment>.");
+		}
 	}//end of show equipment method
 	else if ((parts[0]).equals ("equip") || (parts[0]).equals ("wear"))
 	{
+		if (parts.length == 2) {
 		equipItem(parts[1]);
+	}//end of check length of array
+	else {
+		System.out.println("Command takes 2 arguments <equip> or <wear> <item_name>.");
+	}
 	}//end of equip
+	
+	else if ((parts[0]).equals ("look") || (parts[0]).equals ("examine"))
+	{
+		if (parts.length == 2) {
+		lookAtObject(parts[1]);
+		}//end of check array length
+		else {
+			System.out.println("Command takes 2 arguments, <look> or <examine> <object_name>.");
+		}
+	}//end of looking
+	
 	else if ((parts[0]).equals ("take"))
 	{
+		if (parts.length == 2) {
 		takeItem((parts[1]));
+		}//end of check if array length is 2
+		else{
+			System.out.println("Command 'take' takes 2 arguments (take <name_of_item>).");
+		}
 	}//end of if take
+	else if ((parts[0]).equals ("sleep") || (parts[0]).equals ("rest"))
+	{
+		if (parts.length == 1) {
+		if (currentRoom.isSafe() == true) {
+			System.out.println("You lay down and fall asleep.");
+			savePlayerInfoToDB(player.getName());
+		} else {
+			System.out.println("You cannot "+parts[0]+" here.");
+		}
+		}//end of check length of array
+		else {
+			System.out.println("Command takes 1 argument <sleep> or <rest>.");
+		}
+	}//end of if sleep or rest
 	else if ((parts[0]).equals ("exit") || (parts[0]).equals ("quit"))
 	{
+		if (parts.length == 1) {
 		quitGame();
+	}//end of check for length of array
+	else {
+		System.out.println("Command takes 1 argument <exit> or <quit>.");
 	}
-	
+	}
 	
 	else { //command is not recognized
 	System.out.println("Command not recognized");
@@ -316,6 +387,7 @@ public static void quitGame() {
 	answer=stringScanner.next();
 	if (answer.equals ("y"))
 	{
+		savePlayerInfoToDB(player.getName());
 		System.exit(0);
 	}
 }
@@ -417,6 +489,19 @@ public static void quitGame() {
 			else{System.out.println("You do not have that item.");}
 		
 	}//end of equip item method
+		
+		
+		public static int searchRoom(String name) {
+		int result=-1;
+		LinkedList list=currentRoom.getList();
+for (int i=0; i<list.size(); i++) {
+if ((list.get(i)).equals (name)) {
+	result=i;
+}//end of if statement
+}//end of for loop	
+return result;
+		}//end of searchRoom method
+		
 		public static boolean searchForPlayerInDB(String searchName)
 	{
 		    boolean foundMatch=false;
@@ -613,6 +698,72 @@ System.out.println("SQL Exception detected.");
 			
 		
 	}//end of createNewCharacter method
+		public static void savePlayerInfoToDB(String name) {
+			try{
+			psUpdatePlayerInfo.setString(1, player.getDescription());
+			psUpdatePlayerInfo.setString(2, player.gender);
+			psUpdatePlayerInfo.setInt(3, x); // x position
+			psUpdatePlayerInfo.setInt(4, y);//y position
+			psUpdatePlayerInfo.setInt(5, player.classID);
+			psUpdatePlayerInfo.setInt(6, player.level);// level
+			psUpdatePlayerInfo.setInt(7, player.experience); //experience
+			psUpdatePlayerInfo.setInt(8, player.HP);
+			psUpdatePlayerInfo.setInt(9, player.maxHP);
+			psUpdatePlayerInfo.setInt(10, player.SP);
+			psUpdatePlayerInfo.setInt(11, player.maxSP);
+			psUpdatePlayerInfo.setInt(12, player.MP);
+			psUpdatePlayerInfo.setInt(13, player.maxMP);
+			psUpdatePlayerInfo.setInt(14, player.strength);
+			psUpdatePlayerInfo.setInt(15, player.dextarity);
+			psUpdatePlayerInfo.setInt(16, player.agility);
+			psUpdatePlayerInfo.setInt(17, player.intelligence);
+			psUpdatePlayerInfo.setString(18, player.getName());
+			
+			psUpdatePlayerInfo.executeUpdate();
+			
+
+			
+			System.out.println(name+" info saved.");
+
+			
+			
+			
+			} catch (SQLException se) {
+				se.printStackTrace();
+			}
+		}//end of savePlayerInfoToDB method
+	
+	public static void lookAtObject(String searchName) {
+		
+		WorldObject obj;
+	Room r=currentRoom;
+	String n;
+	LinkedList<WorldObject> list = r.getList();
+	boolean foundObject=false;
+	searchName = searchName.toLowerCase();
+	for (int i=0; i<list.size(); i++)
+	{
+		obj = list.get(i);
+		n=obj.getName();
+		
+		
+		n=n.toLowerCase();
+		if (n.contains(searchName))
+		{
+			foundObject=true;
+			System.out.println(obj.getName()+":  "+obj.longDescription);
+			break;
+		}//end of  if statement
+		
+		}//end of for loop
+
+		
+		if (foundObject == false)
+		{
+			System.out.println("You see nothing like that here.");
+		}//end of if foundItem is true
 		
 	
+	
+	}//end of lookAtObject method
 }//end of game class

@@ -8,20 +8,26 @@ private String name;
 private int x;
 private int y;
 private String description;
-private boolean block;
+private boolean safe;
 private int id;
 private LinkedList<WorldObject> roomList = new LinkedList<WorldObject>();
-public Room(String name, int x, int y, String description, boolean block)
+public Room(String name, int x, int y, String description, boolean safe)
 {
 	this.name=name;
 	this.description=description;
-	this.block=block;
+	this.safe=safe;
 	this.x = x;
 	this.y=y;
 }//end of room constructor
 public void add(WorldObject obj) {
 	roomList.add(obj);
 }
+public boolean isSafe() {
+	return this.safe;
+}//end of if safe method
+public void setSafe(boolean safe) {
+	this.safe=safe;
+}//end of set safe method
 public LinkedList getList() {
 	return this.roomList;
 }//end of get  object list method

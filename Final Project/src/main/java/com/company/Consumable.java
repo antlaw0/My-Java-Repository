@@ -5,9 +5,10 @@ private int restoreHPAmount;
 private int restoreMPAmount;
 private int restoreSPAmount;
 
-public Consumable(String name, String description, int h, int m, int s) {
+public Consumable(String name, String description, String longDescription, int h, int m, int s) {
 	this.name=name;
 	this.description=description;
+	this.longDescription=longDescription;
 	this.restoreHPAmount=h;
 	this.restoreMPAmount=m;
 	this.restoreSPAmount=s;

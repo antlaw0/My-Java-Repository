@@ -6,6 +6,7 @@ abstract class WorldObject
 {
 String name;
 String description;
+public String longDescription="";
 public void setDescription(String d) {
 	this.description = d;
 }
@@ -22,5 +23,4 @@ public void setName(String n)
 this.name=n;
 }
 	
-
 }
