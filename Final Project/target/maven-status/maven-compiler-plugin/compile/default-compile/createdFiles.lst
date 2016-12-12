@@ -6,6 +6,7 @@ com\company\Room.class
 com\company\Game.class
 com\company\GUI$DrawCanvas.class
 com\company\Consumable.class
+com\company\Weapon.class
 com\company\NPC.class
 com\company\WorldObject.class
 com\company\GUI.class

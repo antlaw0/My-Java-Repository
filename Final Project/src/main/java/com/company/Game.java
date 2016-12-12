@@ -16,6 +16,7 @@ public class Game
 		static Scanner stringScanner = new Scanner(System.in);
 		//Use this scanner to read in numerical data that will be stored in int or double variables
 		static Scanner numberScanner = new Scanner(System.in);
+static Random randomint = new Random();
 
 static Connection conn;		
 		static ResultSet rs;
@@ -27,6 +28,7 @@ static Player player;
 		public static int x;
 public static int y;
 public static LinkedList<String> itemMasterList= new LinkedList();
+		public static LinkedList<String> enemyMasterList=new LinkedList<String>();
 		public static ArrayList<Room> roomList = new ArrayList<Room>();
 public static Room currentRoom;
 static boolean displayedRoomInfo=false;
@@ -94,6 +96,7 @@ statement=null;
 	
 Consumable test = new Consumable("Test Potion", "A test potion", "This is a test potion. It serves no real purpose. It is just for testing. That is about it.", 4,3,2);
 Consumable apple = new Consumable("Apple","A shiny, red apple", "It is a shiny, red apple. It looks to be safe to eat, not poisoned, no worms. It should heal some health if you eat it. Or not, you will have to eat it and see...", 1,1,1);
+Weapon stick = new Weapon("Stick", "A wooden stick", "It is a simple, wooden stick approximately 2 feet long. It could be used as a weapon. It is better than nothing.", 1, 50);
 Armor testHelmet = new Armor("Helmet","A test helmet", "It appears to be a low-quality helmet made of rough leather. It doesn't look like it will provide much protection but beggers cannot be choosers. Just wear it.", 1,5);
 Armor testTorsoArmor = new Armor("Test Armor","A test torso armor", "It is a low-quality piece of armor that is worn on the body protecting the chest and vital organs from harm. It does not look like much but is better than nothing.", 2,5);
 Armor startingTorsoArmor = new Armor("Leather Armor","A leather torso armor", "This is a lower quality light armor made of thick leather. It should provide minimal protection without sacrificing mobility. Good for light infantry, archers, and rogues.", 2,5);
@@ -104,7 +107,7 @@ Armor startingFeetArmor = new Armor("Leather Boots","A pair of leather boots", "
 
 String command;
 Room startingRoom = new Room("Small Camp", 0,0,"This is a small camp for travellers of all sorts. There a few tents scattered about with a fire crackling softly in the center. There are not many people currently staying here. ",true);
-NPC Bob = new NPC("Bob","An old man in a travelling cloak stands here.", "He looks very old and well travelled. He has numerous bags that presumably  contain his travelling gear. He seems friendly enough. He is a human male approximately 5 ft tall.");
+NPC Bob = new NPC("Bob","An old man in a travelling cloak stands here.", "He looks very old and well travelled. He has numerous bags that presumably  contain his travelling gear. He seems friendly enough. He is a human male approximately 5 ft tall.", false);
 Bob.inventory.add(apple);
 Furniture bed = new Furniture("bed","A nice, comfy bed.", "It is a small cott with a quilt and a pillow. Perfect for sleeping.");
 startingRoom.add(bed);
@@ -116,6 +119,22 @@ currentRoom=startingRoom;
 roomList.add(startingRoom);
 Room eastRoom = new Room("A dark forest",1,0,"This is a dark forest.",false);
 roomList.add(eastRoom);
+NPC skeleton =new NPC("Skeletal Warrior", "An undead skeletal warrior stands here menacingly.", "It is a reanimated skeleton made to do its master's bidding. It creeks grotesquely as it moves clumbsily around. It seems to be wielding some sort of crude weapon. It does not look too tough. It is a pile of bones after all.", true);
+skeleton.experience=10;
+skeleton.weaponSlot=stick;
+skeleton.HP=50;
+skeleton.maxHP=50;
+skeleton.SP=50;
+skeleton.maxSP=50;
+skeleton.MP=10;
+skeleton.maxMP=10;
+skeleton.level=1;
+skeleton.strength=5;
+skeleton.dextarity=10;
+skeleton.agility=10;
+skeleton.intelligence=5;
+
+eastRoom.add(skeleton);
 Room southRoom = new Room("A grassy field",0,1,"A grassy field stretches out before you.",false);
 roomList.add(southRoom);
 Room testRoom = new Room("A test room",5,5,"This is a testing room.",false);
@@ -154,6 +173,7 @@ player.torsoSlot=startingTorsoArmor;
 player.headSlot=startingHelmet;
 player.legSlot=startingLegArmor;
 player.feetSlot=startingFeetArmor;
+player.weaponSlot=stick;
 player.inventory.add(test);
 
 
@@ -366,6 +386,30 @@ else{
 			System.out.println("Command takes 1 argument <sleep> or <rest>.");
 		}
 	}//end of if sleep or rest
+	else if ((parts[0]).equals ("attack"))
+	{
+		if (parts.length == 2) {
+		attackEnemy((parts[1]));
+		}//end of check if array length is 2
+		else{
+			System.out.println("Command 'attack' takes 2 arguments (attack <name_of_enemy>).");
+		}
+	}//end of if attackEnemy
+	
+	else if ((parts[0]).equals ("stats") || (parts[0]).equals ("score"))
+	{
+		if (parts.length == 1) {
+player.showStats();
+		}//end of check length of array
+		else {
+			System.out.println("Command takes 1 argument <stats> or <score>.");
+		}
+	}//end of if check stats
+	
+	
+	
+	
+	
 	else if ((parts[0]).equals ("exit") || (parts[0]).equals ("quit"))
 	{
 		if (parts.length == 1) {
@@ -437,6 +481,84 @@ public static void quitGame() {
 	
 	}//end of takeItem method
 	
+	public static void attackEnemy(String searchName) {
+	WorldObject obj;
+	Room r=currentRoom;
+	String n;
+	LinkedList<WorldObject> list = r.getList();
+	boolean foundEnemy=false;
+	boolean enemyDefeated=false;
+	searchName = searchName.toLowerCase();
+	for (int i=0; i<list.size(); i++)
+	{
+		obj = list.get(i);
+		n=obj.getName();
+		
+		
+		n=n.toLowerCase();
+		if (n.contains(searchName))
+		{
+			if (isEnemy(n) == true)
+			{
+				foundEnemy=true;
+				NPC e = (NPC) obj;
+				if ((player.weaponSlot.weaponAccuracy+randomint.nextInt(player.dextarity)) >= e.agility)
+				{
+					int totalDmg=(player.weaponSlot.weaponDamage+randomint.nextInt(player.strength));
+					System.out.println("You attack "+e.getName()+" for "+totalDmg+" points of damage.");
+					e.HP-=totalDmg;
+				if (e.HP<=0) {
+					System.out.println(e.getName()+" has been defeated! You receive "+e.experience+" experience for your victory.");
+					player.experience+=e.experience;
+					list.remove(i);
+					enemyDefeated=true;
+					break;
+				}//end of check of enemy hp is less than or zero
+				}//end of check if hit
+				else{
+					System.out.println("You missed!");
+				}//end of if attack missed
+				if (enemyDefeated==false) {
+					System.out.println(e.getName()+" attacks...");
+					if ((e.weaponSlot.weaponAccuracy+randomint.nextInt(e.dextarity)) >= player.agility) {
+						int totalDmg= (e.weaponSlot.weaponDamage+randomint.nextInt(e.strength));
+						player.HP-=totalDmg;
+						
+						System.out.println(e.getName()+" hits you for "+totalDmg+" points of damage leaving you with "+player.HP+" health.");
+						if (player.HP <=0) {
+							System.out.println("You have been defeated... game over");
+							System.exit(0);
+						}//end of check if player hp less than or equal to zero
+					}//end of check of enemy attack hit
+					else {
+						System.out.println(e.getName()+"'s attack missed.");
+					}
+				}//end of if enemy not defeated
+				
+				
+				
+			}//end of inner if statement
+			else{ // obj has searchName but is not an enemy
+				System.out.println("You cannot attack that.");
+				foundEnemy=true;
+				break;
+				
+			}//end of inner else statement
+		}	//end of outer if statement
+		
+		}//end of for loop
+
+		
+		if (foundEnemy == false)
+		{
+			System.out.println("You see nothing like that here.");
+		}//end of if foundEnemy is true
+		
+	
+	}//end of attackEnemy method
+	
+	
+	
 	public static boolean isItem(String name) {
 		boolean foundMatch=false;
 		String nameInList;
@@ -453,6 +575,22 @@ public static void quitGame() {
 		
 		return foundMatch;
 	}//end of isItem method
+	public static boolean isEnemy(String name) {
+		boolean foundMatch=false;
+		String nameInList;
+		for (int i=0; i<enemyMasterList.size(); i++)
+		{
+			
+			nameInList=enemyMasterList.get(i);
+			nameInList=nameInList.toLowerCase();
+			if (name.equals (nameInList))
+			{
+				foundMatch=true;
+			}//end of if statement
+		}//end of for loop
+		
+		return foundMatch;
+	}//end of isEnemy method
 	
 	
 	public static void equipItem(String name)
@@ -548,8 +686,7 @@ try {
 				{
 					String description=rs.getString("Description");
 					//set global x position to read-in value
-					int x=rs.getInt("Xpos");
-					//set global y position to read-in value
+					Game.x=rs.getInt("Xpos");
 					String gender=rs.getString("Gender");
 					int classID=rs.getInt("ClassID");
 					int level=rs.getInt("Level");
@@ -558,7 +695,8 @@ try {
 					int agility = rs.getInt("Agility");
 					int dextarity=rs.getInt("Dextarity");
 					int intelligence=rs.getInt("Intelligence");
-					int y=rs.getInt("Ypos");
+					//set global y position to read-in value
+					Game.y=rs.getInt("Ypos");
 					int hp=rs.getInt("HP");
 					int maxhp=rs.getInt("MaxHP");
 					int sp=rs.getInt("SP");
@@ -569,6 +707,7 @@ try {
 					player= new Player(name,description);
 					player.level=level;
 					player.experience=xp;
+					player.gender=gender;
 					player.classID=classID;
 					player.strength=strength;
 					player.dextarity=dextarity;
@@ -641,10 +780,10 @@ System.out.println("SQL Exception detected.");
 		
 		className=stringScanner.nextLine();
 		
-			if (className.equals ("Warrior")) { classChosen=true; startingHP=startingWarriorHP; startingSP=startingWarriorSP; startingMP=startingWarriorMP; startingStrength=startingWarriorStrength; startingDextarity=startingWarriorDextarity; startingAgility=startingWarriorAgility; startingIntelligence=startingWarriorIntelligence;}
-			else if (className.equals ("Rogue")) { classChosen=true; startingHP=startingRogueHP; startingSP=startingRogueSP; startingMP=startingRogueMP; startingStrength=startingRogueStrength; startingDextarity=startingRogueDextarity; startingAgility=startingRogueAgility; startingIntelligence=startingRogueIntelligence;}
+			if (className.equals ("Warrior")) { classID=1; classChosen=true; startingHP=startingWarriorHP; startingSP=startingWarriorSP; startingMP=startingWarriorMP; startingStrength=startingWarriorStrength; startingDextarity=startingWarriorDextarity; startingAgility=startingWarriorAgility; startingIntelligence=startingWarriorIntelligence;}
+			else if (className.equals ("Rogue")) { classID=2; classChosen=true; startingHP=startingRogueHP; startingSP=startingRogueSP; startingMP=startingRogueMP; startingStrength=startingRogueStrength; startingDextarity=startingRogueDextarity; startingAgility=startingRogueAgility; startingIntelligence=startingRogueIntelligence;}
 			
-			else if (className.equals ("Mage")) {classChosen=true;  startingHP=startingMageHP; startingSP=startingMageSP; startingMP=startingMageMP; startingStrength=startingMageStrength; startingAgility=startingMageAgility; startingDextarity=startingMageDextarity; startingIntelligence=startingMageIntelligence; }
+			else if (className.equals ("Mage")) {classID=3; classChosen=true;  startingHP=startingMageHP; startingSP=startingMageSP; startingMP=startingMageMP; startingStrength=startingMageStrength; startingAgility=startingMageAgility; startingDextarity=startingMageDextarity; startingIntelligence=startingMageIntelligence; }
 			else {System.out.println("Invalid input. Please enter 'Warrior', 'Rogue', or 'Mage'."); }
 		}//end of classChosen while loop
 			
@@ -702,8 +841,8 @@ System.out.println("SQL Exception detected.");
 			try{
 			psUpdatePlayerInfo.setString(1, player.getDescription());
 			psUpdatePlayerInfo.setString(2, player.gender);
-			psUpdatePlayerInfo.setInt(3, x); // x position
-			psUpdatePlayerInfo.setInt(4, y);//y position
+			psUpdatePlayerInfo.setInt(3, Game.x); // x position
+			psUpdatePlayerInfo.setInt(4, Game.y);//y position
 			psUpdatePlayerInfo.setInt(5, player.classID);
 			psUpdatePlayerInfo.setInt(6, player.level);// level
 			psUpdatePlayerInfo.setInt(7, player.experience); //experience

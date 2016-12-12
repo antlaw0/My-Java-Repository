@@ -10,8 +10,8 @@ public int maxSP=100;
 public int SP=100;
 public int maxMP=100;
 public int MP=100;
-public int classID=0;
-public String gender="";
+public int classID;
+public String gender;
 public int level=1;
 public int experience=0;
 public int strength=10;
@@ -22,6 +22,7 @@ public Armor headSlot;
 public Armor torsoSlot;
 public Armor legSlot;
 public Armor feetSlot;
+public Weapon weaponSlot;
 public int totalArmorValue=0;
 
 public LinkedList<Item> inventory = new LinkedList<Item>();
@@ -73,9 +74,38 @@ public void showEquipment() {
 	
 	System.out.println("Head:  "+this.headSlot.getName()+"     "+headSlot.armorValue);
 	System.out.println("Torso:  "+this.torsoSlot.getName()+"     "+torsoSlot.armorValue);
+	System.out.println("Legs:  "+this.legSlot.getName()+"     "+legSlot.armorValue);
+	System.out.println("Feet:  "+this.feetSlot.getName()+"     "+feetSlot.armorValue);
 
 	
 	
 }//end of show equipment method
+
+public void showStats() {
+	
+	String className;
+	if (this.classID==1){className="Warrior";}
+	else if (this.classID==2){className="Rogue";}
+	else if (this.classID==3){className="Mage";}
+	else{className="Unknown";}
+	
+	
+	System.out.println("Name:  "+this.name);
+	System.out.println(this.description);
+	System.out.println("Gender:  "+this.gender);
+	System.out.println("Level:  "+this.level);
+	System.out.println("Class:  "+className);
+	System.out.println("Experience:  "+this.experience);
+	System.out.println("HP:  "+this.HP+" / "+this.maxHP);
+	System.out.println("SP:  "+this.SP+" / "+this.maxSP);
+	System.out.println("MP:  "+this.MP+" / "+this.maxMP);
+	System.out.println("Strength:  "+this.strength);
+	System.out.println("Dextarity:  "+this.dextarity);
+	System.out.println("Agility:  "+this.agility);
+	System.out.println("Intelligence:  "+this.intelligence);
+	
+	
+	
+}//end of show character stats method
 
 }//end of Character class

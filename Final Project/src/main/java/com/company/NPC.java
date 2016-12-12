@@ -5,12 +5,19 @@ import java.util.*;
 public class NPC extends Character
 {
 private String dialogue;
-public NPC(String name, String description, String longDescription) {
+public boolean enemy;
+
+public NPC(String name, String description, String longDescription, boolean enemy) {
 	this.name=name;
 	this.description=description;
 	this.longDescription=longDescription;
+	this.enemy=enemy;
+	
+	if (enemy==true) {
+		Game.enemyMasterList.add(name);
+	}
+	
 }
-
 public void setDialogue(String text) {
 	this.dialogue = text;
 }//end of set dialogue method
