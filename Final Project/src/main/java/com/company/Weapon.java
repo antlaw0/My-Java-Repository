@@ -10,6 +10,7 @@ this.description=description;
 this.longDescription=longDescription;
 this.weaponDamage=dmg;
 this.weaponAccuracy=acc;
+Game.itemMasterList.add(this.name);
 
 }//end of constructor
 

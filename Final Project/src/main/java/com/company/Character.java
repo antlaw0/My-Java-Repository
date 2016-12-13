@@ -1,15 +1,16 @@
 package com.company;
 
 import java.util.*;
-
+//All entities in the game are Characters
 public abstract class Character extends WorldObject
 {
+//all characters have same attributes
 public int maxHP=100;
-public int HP=100;
+public int HP=100;//health
 public int maxSP=100;
-public int SP=100;
+public int SP=100;//stamina
 public int maxMP=100;
-public int MP=100;
+public int MP=100;//magic points
 public int classID;
 public String gender;
 public int level=1;
@@ -24,10 +25,10 @@ public Armor legSlot;
 public Armor feetSlot;
 public Weapon weaponSlot;
 public int totalArmorValue=0;
-
+//all have inventories of items
 public LinkedList<Item> inventory = new LinkedList<Item>();
 
-
+//This method shows a character's inventory
 public void showInventory() {
 	Item I;
 	boolean is;
@@ -40,7 +41,7 @@ public void showInventory() {
 	}
 	
 }//end of showInventory method
-
+//This is used mainly to check if a character has a given item and get the index of that item if needed
 public int getIndexOf(String name) {
 	int index=-1;
 	name=name.toLowerCase();
@@ -58,7 +59,7 @@ public int getIndexOf(String name) {
 	
 	return index;
 }//end of getIndexOf method
-
+//This is used in combat calculations to get the amount of damage reduction of a given character
 public int getTotalArmorValue() {
 	int total = this.headSlot.armorValue+
 	this.torsoSlot.armorValue+
@@ -68,9 +69,12 @@ public int getTotalArmorValue() {
 	return total;
 	
 }//end of getTotalArmorValue
-
+//show all equipment this character is currently wearing
 public void showEquipment() {
-	System.out.println(this.name+"'s equipment \n Slot     Armor Value");
+	System.out.println(this.name+" Equipment");
+	System.out.println("Weapon Name:  "+this.weaponSlot.getName()+"  Damage:  "+this.weaponSlot.weaponDamage+"   Accuracy:  "+this.weaponSlot.weaponAccuracy);
+	
+	System.out.println("Armor Slot     Armor Value");
 	
 	System.out.println("Head:  "+this.headSlot.getName()+"     "+headSlot.armorValue);
 	System.out.println("Torso:  "+this.torsoSlot.getName()+"     "+torsoSlot.armorValue);
@@ -80,7 +84,7 @@ public void showEquipment() {
 	
 	
 }//end of show equipment method
-
+//display all stats of this character
 public void showStats() {
 	
 	String className;

@@ -28,7 +28,7 @@ public class GUI extends JFrame {
       setDefaultCloseOperation(EXIT_ON_CLOSE);   // Handle the CLOSE button
       pack();              // Either pack() the components; or setSize()
       setTitle("Game GUI");  // "super" JFrame sets the title
-      setVisible(true);    // "super" JFrame show
+      setVisible(true);    
    }
  
    /**
@@ -40,12 +40,11 @@ public class GUI extends JFrame {
       public void paintComponent(Graphics g) {
          super.paintComponent(g);     // paint parent's background
          setBackground(Color.BLACK);  // set background color for this JPanel
- 
-         // Your custom painting codes. For example,
-         // Drawing primitive shapes
+ //Note: commented out lines are left as a reference if I ever needed to use them at a future point
          g.setColor(Color.YELLOW);    // set the drawing color
          //g.drawLine(30, 40, 100, 200);
-         Room R;
+         //loop through all room objects and draw their positions on the map GUI
+		 Room R;
 		 int x;
 		 int y;
 		 for (int i=0; i<Game.roomList.size(); i++)
@@ -53,33 +52,29 @@ public class GUI extends JFrame {
 			 R=Game.roomList.get(i);
 			 x=R.getX();
 			 y=R.getY();
-			 g.drawRect(x*roomSize, y*roomSize, roomSize, roomSize);
-			 
+			 g.drawRect(x*roomSize, y*roomSize, roomSize, roomSize);//draw this iteration's room at the given x and y with the given pixle size
+			 //draw the name of the room
 			 g.setFont(new Font("Monospaced", Font.PLAIN, 12));
          g.setColor(Color.WHITE);
          g.drawString(Game.currentRoom.getRoomName(), 10, 20);
-		
+		//draw a circle where the player is in the world
 g.fillOval(Game.x*roomSize, Game.y*roomSize, roomSize, roomSize);
          
-		
+		//this redraws the GUI so it reflects the player moving and the name of the room changing
 			 canvas.repaint();
       }
          	
 		 
 		 }
 		 
-		 //g.setColor(Color.RED);       // change the drawing color
-         //g.fillOval(300, 310, 30, 50);
-         //g.fillRect(400, 350, 60, 50);
-         // Printing texts
-         
+		 
    }
  
 
  
-   // The entry main method
+   //main method 
    public void runGUI() {
-      // Run the GUI codes on the Event-Dispatching thread for thread safety
+      // Run the GUI 
       SwingUtilities.invokeLater(new Runnable() {
          @Override
          public void run() {
